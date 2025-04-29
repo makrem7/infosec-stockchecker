@@ -1,5 +1,11 @@
 'use strict';
-require('dotenv').config();
+require('dotenv').config({ path: 'sample.env' }); // This line loads variables from sample.env into process.env
+
+// Then you can access your environment variables like this:
+const DB = process.env.DB;
+
+// Now you can use the DB variable in your application.
+
 const express     = require('express');
 const bodyParser  = require('body-parser');
 const cors        = require('cors');
@@ -7,8 +13,20 @@ const cors        = require('cors');
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
+const helmet = require("helmet");
+require("./db-connection");
 
 const app = express();
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://code.jquery.com/jquery-2.2.1.min.js"],
+      styleSrc: ["'self'"],
+    },
+  })
+);
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
